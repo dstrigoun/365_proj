@@ -13,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 
 public class Main extends Application {
 	@FXML
-	private ImageView imageView;
+	private ImageView originalVid;
 	
 	@Override
 	public void start(Stage primaryStage) {

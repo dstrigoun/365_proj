@@ -15,18 +15,18 @@
 <?import javafx.scene.text.Text?>
 
 <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="458.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
-   <center>
-      <VBox fx:id="vbox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="740.0" BorderPane.alignment="CENTER">
+   <top>
+      <VBox fx:id="vbox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+            <ImageView fx:id="originalVid" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                <VBox.margin>
                   <Insets left="90.0" right="90.0" top="10.0" />
                </VBox.margin>
             </ImageView>
          </children>
       </VBox>
-   </center>
-   <bottom>
+   </top>
+   <center>
       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
             <Slider fx:id="slider">
@@ -34,26 +34,13 @@
                   <Insets left="100.0" right="100.0" />
                </VBox.margin>
             </Slider>
-            <HBox VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <Button minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#setFileName" text="Open">
                      <HBox.margin>
                         <Insets left="90.0" top="20.0" />
                      </HBox.margin>
                   </Button>
-                  <VBox alignment="TOP_CENTER" maxHeight="50.0" prefHeight="200.0" prefWidth="150.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume" textOrigin="CENTER" VBox.vgrow="ALWAYS">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Text>
-                        <Slider fx:id="volumeSlider" />
-                     </children>
-                     <HBox.margin>
-                        <Insets left="30.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
                   <Button minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#playImage" text="Play">
                      <HBox.margin>
                         <Insets left="10.0" right="90.0" top="20.0" />
@@ -61,15 +48,20 @@
                   </Button>
                </children>
             </HBox>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="CMPT 365 | Simon Fraser University | May 2017&#10;Mark Drew (mark@cs.sfu.ca) | Chen Song (csa102@sfu.ca)" textAlignment="CENTER" wrappingWidth="456.638671875" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Text>
          </children>
          <BorderPane.margin>
             <Insets top="20.0" />
          </BorderPane.margin>
+      </VBox>
+   </center>
+   <bottom>
+      <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="stiColumn" fitHeight="150.0" fitWidth="200.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+               <VBox.margin>
+                  <Insets left="90.0" right="90.0" top="10.0" />
+               </VBox.margin></ImageView>
+         </children>
       </VBox>
    </bottom>
 </BorderPane>

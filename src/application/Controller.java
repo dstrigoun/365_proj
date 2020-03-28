@@ -38,7 +38,7 @@ import utilities.Utilities;
 public class Controller {
 	
 	@FXML
-	private ImageView imageView; // the image display window in the GUI
+	private ImageView originalVid; // the image display window in the GUI
 	@FXML
 	private VBox vbox;
 	
@@ -99,11 +99,11 @@ public class Controller {
 			Mat frame = new Mat(); 
 			if (capture.read(frame)) { // decode successfully 
 				Image im = Utilities.mat2Image(frame);
-				Utilities.onFXThread(imageView.imageProperty(), im);
+				Utilities.onFXThread(originalVid.imageProperty(), im);
 				
 				//bind the image to the vbox as user scales the window
-				imageView.fitWidthProperty().bind(vbox.widthProperty());
-				imageView.fitHeightProperty().bind(vbox.heightProperty());
+				originalVid.fitWidthProperty().bind(vbox.widthProperty());
+				originalVid.fitHeightProperty().bind(vbox.heightProperty());
 			}
 		}
 	}
@@ -124,7 +124,7 @@ public class Controller {
 					Mat frame = new Mat(); 
 					if (capture.read(frame)) { // decode successfully 
 						Image im = Utilities.mat2Image(frame);
-						Utilities.onFXThread(imageView.imageProperty(), im); 
+						Utilities.onFXThread(originalVid.imageProperty(), im); 
 						image = frame;
 						double currentFrameNumber = capture.get(Videoio.CAP_PROP_POS_FRAMES); 
 						double totalFrameCount = capture.get(Videoio.CAP_PROP_FRAME_COUNT);
