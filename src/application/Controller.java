@@ -101,9 +101,9 @@ public class Controller {
 				Image im = Utilities.mat2Image(frame);
 				Utilities.onFXThread(originalVid.imageProperty(), im);
 				
-				//bind the image to the vbox as user scales the window
-				originalVid.fitWidthProperty().bind(vbox.widthProperty());
-				originalVid.fitHeightProperty().bind(vbox.heightProperty());
+//				//bind the image to the vbox as user scales the window
+//				originalVid.fitWidthProperty().bind(vbox.widthProperty());
+//				originalVid.fitHeightProperty().bind(vbox.heightProperty());
 			}
 		}
 	}
