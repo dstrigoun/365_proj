@@ -48,6 +48,8 @@ public class Controller {
 	@FXML
 	private ImageView stiRow;
 	@FXML
+	private ImageView stiHistGrey;
+	@FXML
 	private VBox vbox;
 		
 	@FXML
@@ -111,6 +113,7 @@ public class Controller {
 
 			BufferedImage stiColImage = new BufferedImage(frameCount, height, BufferedImage.TYPE_INT_ARGB);
 			BufferedImage stiRowImage = new BufferedImage(frameCount, width, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage stiHistImage = new BufferedImage(frameCount, width, BufferedImage.TYPE_INT_RGB);
 			
 			Runnable frameGrabber = new Runnable() {
 				@Override 
@@ -150,14 +153,35 @@ public class Controller {
                         Image cardRow = SwingFXUtils.toFXImage(stiRowImage, null);
                         stiRow.setImage(cardRow);
                         
-                        // Histogram stuff
-                        if(currentFrameNumber == 1) {
-                        	currHist = createHist(frame, height, width);
-                        	prevHist = currHist;
-                        }
                         
+                        
+                        // Histogram stuff
+                        if(i == 1) {
+                        	currHist = createHist(frame, height, width);
+                        	System.out.println("first frame");
+                        }
+                        prevHist = currHist;
+                        currHist = createHist(frame, height, width);
+                        
+                        float[] intersect = getIntersect(currHist, prevHist, width);
+                        stiHist[(int) currentFrameNumber - 1] = intersect;
+                        
+//                        System.out.println("stuff");
+
 					} else { // reach the end of the video
-							capture.set(Videoio.CAP_PROP_POS_FRAMES, 0); 
+						capture.set(Videoio.CAP_PROP_POS_FRAMES, 0); 
+						
+						int[][] greyscale = createGreyscale(stiHist);
+						for (int i = 0; i < frameCount; i++) {
+							for (int j = 0; j < width; j++) {
+								int val = greyscale[i][j];
+	                            Color cHist = new Color(val,val,val);
+	                            stiHistImage.setRGB(i, j, cHist.getRGB());                        	
+	                        }
+						}
+						
+						Image cardHist = SwingFXUtils.toFXImage(stiHistImage, null);
+						stiHistGrey.setImage(cardHist);
 					} 
 				}
 			}; 
@@ -226,6 +250,35 @@ public class Controller {
 		}
 		
 		return columnHist;
+	}
+	
+	private float[] getIntersect(float[][][] currHist, float[][][] prevHist, int width) {
+		float[] intersect = new float[width];
+		int bins = currHist[0].length;
+		
+		for(int k = 0; k < width; k++) {
+			for(int i = 0; i < bins; i++) {
+				for(int j = 0; j < bins; j++) {
+					intersect[k] += Math.min(currHist[k][i][j], prevHist[k][i][j]);
+				}
+			}
+		}
+		
+		return intersect;
+	}
+	
+	protected int[][] createGreyscale(float[][] stiHist) {
+		int frames = stiHist.length;
+		int width = stiHist[0].length;
+		int[][] greyscale = new int[frames][width];
+		
+		for(int i = 0; i < frames; i++) {
+			for(int j = 0; j < width; j++) {
+				greyscale[i][j] = (int) Math.ceil(stiHist[i][j]*255);
+			}
+		}
+		
+		return greyscale;
 	}
 
 	protected float[] getChromaticity(Color rgb) {

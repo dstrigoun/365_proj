@@ -73,6 +73,18 @@
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="STI Row" />
                         <ImageView fx:id="stiRow" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
+                     <HBox.margin>
+                        <Insets right="25.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="STI Histogram Greyscale" />
+                        <ImageView fx:id="stiHistGrey" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </VBox>
                </children>
             </HBox>
