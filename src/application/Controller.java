@@ -59,6 +59,10 @@ public class Controller {
 	private VideoCapture capture;
 	private ScheduledExecutorService timer;
 	
+	private int size;
+	private float[][][] currHist;
+	private float[][][] prevHist;
+	
 	@FXML
 	private void initialize() {
 		System.out.println("Welcome to my program!");
@@ -97,6 +101,7 @@ public class Controller {
 			
 			int[][] stiCols = new int[frameCount][height];
 			int[][] stiRows = new int[frameCount][width];
+			float[][] stiHist = new float[frameCount][width];
 			
 
 			stiColumn.setFitHeight(height);
@@ -145,10 +150,16 @@ public class Controller {
                         Image cardRow = SwingFXUtils.toFXImage(stiRowImage, null);
                         stiRow.setImage(cardRow);
                         
+                        // Histogram stuff
+                        if(currentFrameNumber == 1) {
+                        	currHist = createHist(frame, height, width);
+                        	prevHist = currHist;
+                        }
+                        
 					} else { // reach the end of the video
 							capture.set(Videoio.CAP_PROP_POS_FRAMES, 0); 
 					} 
-				} 
+				}
 			}; 
 			// terminate the timer if it is running 
 			if (timer != null && !timer.isShutdown()) { 
@@ -174,6 +185,49 @@ public class Controller {
 		}
 	}
 	
+	protected float[][][] createHist(Mat frame, int height, int width) {
+		// TODO Auto-generated method stub
+		int bins = (int) Math.floor(1 + Math.log10((double) height)/Math.log10(2.0));
+		float[][][] frameHist = new float[width][bins][bins];
+		
+		for(int i = 0; i < width; i++) {
+			float[][] columnHist = createColumnHist(frame, bins, height, width, i);
+			frameHist[i] = columnHist;
+		}
+		
+		return frameHist;
+	} 
+	
+	private float[][] createColumnHist(Mat frame, int bins, int height, int width, int col) {
+		// Get chromaticity for each pixel
+		BufferedImage img = Utilities.matToBufferedImage(frame);
+		float[][] columnHist = new float[bins][bins];
+		
+		for(int i = 0; i < height; i++) {
+			int rgb = img.getRGB(col, i);
+			Color c = new Color(rgb);
+			
+			float[] rg = getChromaticity(c);
+			
+			int r = (int) Math.ceil(rg[0] * bins) - 1;
+			int g = (int) Math.ceil(rg[1] * bins) - 1;
+			
+			r = r == -1 ? 0 : r; 
+			g = g == -1 ? 0 : g;
+			
+			columnHist[r][g] += 1;
+		}
+				
+		// Normalize
+		for(int i = 0; i < bins; i++) {
+			for(int j = 0; j < bins; j++) {
+				columnHist[i][j] /= height;
+			}
+		}
+		
+		return columnHist;
+	}
+
 	protected float[] getChromaticity(Color rgb) {
 		float[] rg = new float[2];
 		float r;
