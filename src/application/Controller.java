@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -110,6 +111,8 @@ public class Controller {
 			stiColumn.setFitWidth(frameCount);
 			stiRow.setFitHeight(width);
 			stiRow.setFitWidth(frameCount);
+			stiHistGrey.setFitHeight(width);
+			stiHistGrey.setFitWidth(frameCount);
 
 			BufferedImage stiColImage = new BufferedImage(frameCount, height, BufferedImage.TYPE_INT_ARGB);
 			BufferedImage stiRowImage = new BufferedImage(frameCount, width, BufferedImage.TYPE_INT_ARGB);
@@ -119,17 +122,18 @@ public class Controller {
 				@Override 
 				public void run() { 
 					Mat frame = new Mat(); 
+					double currentFrameNumber = capture.get(Videoio.CAP_PROP_POS_FRAMES);
+					System.out.println(currentFrameNumber);
 					if (capture.read(frame)) { // decode successfully 
-						double currentFrameNumber = capture.get(Videoio.CAP_PROP_POS_FRAMES);
 						// Get center column
-						getColumn(frame, stiCols[(int)currentFrameNumber - 1], height, width);
-						getRow(frame, stiRows[(int)currentFrameNumber - 1], height, width);
+						getColumn(frame, stiCols[(int)currentFrameNumber], height, width);
+						getRow(frame, stiRows[(int)currentFrameNumber], height, width);
 
 						Image im = Utilities.mat2Image(frame);
 						Utilities.onFXThread(originalVid.imageProperty(), im); 
 
 						slider.setValue(currentFrameNumber / frameCount * (slider.getMax() - slider.getMin())); 
-						if (currentFrameNumber == frameCount) {
+						if (currentFrameNumber == frameCount - 1) {
 							capture.release();
 							slider.setValue(0);
 						}
@@ -153,35 +157,47 @@ public class Controller {
                         Image cardRow = SwingFXUtils.toFXImage(stiRowImage, null);
                         stiRow.setImage(cardRow);
                         
+//                        System.out.println(currentFrameNumber);
+//                        System.out.println(frameCount);
                         
                         
                         // Histogram stuff
-                        if(i == 1) {
+                        if(i <= 1 || currentFrameNumber == frameCount - 1) {
                         	currHist = createHist(frame, height, width);
                         	System.out.println("first frame");
                         }
-                        prevHist = currHist;
+                        prevHist = currHist.clone();
+                        
+//                        for(int a = 0; a < currHist.length; a++) {
+//                        	for(int b = 0; b < currHist[0].length; b++) {
+//                        		System.arraycopy(currHist[a][b], 0, prevHist[a][b], 0, currHist[0][0].length);
+//                        	}
+//                        }
+                  
                         currHist = createHist(frame, height, width);
                         
-                        float[] intersect = getIntersect(currHist, prevHist, width);
-                        stiHist[(int) currentFrameNumber - 1] = intersect;
+                        if(Arrays.equals(prevHist, currHist)) {
+                        	System.out.println("We are equal bois");
+                        }
+                       
                         
-//                        System.out.println("stuff");
-
+                        float[] intersect = getIntersect(currHist, prevHist, width);
+                        stiHist[i] = intersect;
+//                        System.out.println(i);
+                        
+						int[][] greyscale = createGreyscale(stiHist);
+                        for (int j = 0; j < width; j++) {
+							int val = greyscale[i][j];
+                            Color cHist = new Color(val, val, val);
+                            stiHistImage.setRGB(i, j, cHist.getRGB()); 
+                        }
+                        
+                        Image cardHist = SwingFXUtils.toFXImage(stiHistImage, null);
+						stiHistGrey.setImage(cardHist);
+                        
 					} else { // reach the end of the video
 						capture.set(Videoio.CAP_PROP_POS_FRAMES, 0); 
-						
-						int[][] greyscale = createGreyscale(stiHist);
-						for (int i = 0; i < frameCount; i++) {
-							for (int j = 0; j < width; j++) {
-								int val = greyscale[i][j];
-	                            Color cHist = new Color(val,val,val);
-	                            stiHistImage.setRGB(i, j, cHist.getRGB());                        	
-	                        }
-						}
-						
-						Image cardHist = SwingFXUtils.toFXImage(stiHistImage, null);
-						stiHistGrey.setImage(cardHist);
+						return;
 					} 
 				}
 			}; 
@@ -210,7 +226,6 @@ public class Controller {
 	}
 	
 	protected float[][][] createHist(Mat frame, int height, int width) {
-		// TODO Auto-generated method stub
 		int bins = (int) Math.floor(1 + Math.log10((double) height)/Math.log10(2.0));
 		float[][][] frameHist = new float[width][bins][bins];
 		
@@ -233,8 +248,8 @@ public class Controller {
 			
 			float[] rg = getChromaticity(c);
 			
-			int r = (int) Math.ceil(rg[0] * bins) - 1;
-			int g = (int) Math.ceil(rg[1] * bins) - 1;
+			int r = (int) (rg[0] * bins) - 1;
+			int g = (int) (rg[1] * bins) - 1;
 			
 			r = r == -1 ? 0 : r; 
 			g = g == -1 ? 0 : g;
@@ -274,7 +289,7 @@ public class Controller {
 		
 		for(int i = 0; i < frames; i++) {
 			for(int j = 0; j < width; j++) {
-				greyscale[i][j] = (int) Math.ceil(stiHist[i][j]*255);
+				greyscale[i][j] = (int)(stiHist[i][j]*255);
 			}
 		}
 		
