@@ -49,20 +49,7 @@ public class Controller {
 	private ImageView stiRow;
 	@FXML
 	private VBox vbox;
-	
-	private Mat image;
-	
-	private final static int BUFFER_SIZE = 128000;
-	
-	private int width;
-	private int height;
-	private int sampleRate; // sampling frequency
-	private int sampleSizeInBits;
-	private int numberOfChannels;
-	private double[] freq; // frequencies for each particular row
-	private int numberOfQuantizionLevels;
-	private int numberOfSamplesPerColumn;
-	
+		
 	@FXML
 	private Slider slider;
 	
@@ -74,27 +61,7 @@ public class Controller {
 	
 	@FXML
 	private void initialize() {
-		// Optional: You should modify the logic so that the user can change these values
-		// You may also do some experiments with different values
-		width = 64;
-		height = 64;
-		sampleRate = 32000;
-		sampleSizeInBits = 8;
-		numberOfChannels = 1;
-		
-		numberOfQuantizionLevels = 16;
-		
-		numberOfSamplesPerColumn = 500;
-		
-		// assign frequencies for each particular row
-		freq = new double[height]; // Be sure you understand why it is height rather than width
-		freq[height/2-1] = 440.0; // 440KHz - Sound of A (La)
-		for (int m = height/2; m < height; m++) {
-			freq[m] = freq[m-1] * Math.pow(2, 1.0/12.0); 
-		}
-		for (int m = height/2-2; m >=0; m--) {
-			freq[m] = freq[m+1] * Math.pow(2, -1.0/12.0); 
-		}
+		System.out.println("Welcome to my program!");
 	}
 	
 	@FXML
@@ -108,10 +75,6 @@ public class Controller {
 			if (capture.read(frame)) { // decode successfully 
 				Image im = Utilities.mat2Image(frame);
 				Utilities.onFXThread(originalVid.imageProperty(), im);
-				
-//				//bind the image to the vbox as user scales the window
-//				originalVid.fitWidthProperty().bind(vbox.widthProperty());
-//				originalVid.fitHeightProperty().bind(vbox.heightProperty());
 			}
 		}
 	}
@@ -156,7 +119,7 @@ public class Controller {
 
 						Image im = Utilities.mat2Image(frame);
 						Utilities.onFXThread(originalVid.imageProperty(), im); 
-						image = frame;
+
 						slider.setValue(currentFrameNumber / frameCount * (slider.getMax() - slider.getMin())); 
 						if (currentFrameNumber == frameCount) {
 							capture.release();
