@@ -210,5 +210,28 @@ public class Controller {
 			rgb[i] = img.getRGB(i, height/2);
 		}
 	}
+	
+	protected float[] getChromaticity(Color rgb) {
+		float[] rg = new float[2];
+		float r;
+		float g;
+		
+		int R = rgb.getRed();
+		int G = rgb.getGreen();
+		int B = rgb.getBlue();
+		int sum = R + G + B;
+		
+		if (sum == 0) { // if pixel is black
+			r = 0;
+			g = 0;
+		} else {
+			r = R / sum;
+			g = G / sum;
+		}
+		rg[0] = r;
+		rg[1] = g;
+		
+		return rg;
+	}
 	 
 }
