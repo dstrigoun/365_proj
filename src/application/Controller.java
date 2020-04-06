@@ -123,7 +123,6 @@ public class Controller {
 				public void run() { 
 					Mat frame = new Mat(); 
 					double currentFrameNumber = capture.get(Videoio.CAP_PROP_POS_FRAMES);
-					System.out.println(currentFrameNumber);
 					if (capture.read(frame)) { // decode successfully 
 						// Get center column
 						getColumn(frame, stiCols[(int)currentFrameNumber], height, width);
