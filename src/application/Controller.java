@@ -157,9 +157,6 @@ public class Controller {
                         Image cardRow = SwingFXUtils.toFXImage(stiRowImage, null);
                         stiRow.setImage(cardRow);
                         
-//                        System.out.println(currentFrameNumber);
-//                        System.out.println(frameCount);
-                        
                         
                         // Histogram stuff
                         if(i <= 1 || currentFrameNumber == frameCount - 1) {
@@ -167,12 +164,6 @@ public class Controller {
                         	System.out.println("first frame");
                         }
                         prevHist = currHist.clone();
-                        
-//                        for(int a = 0; a < currHist.length; a++) {
-//                        	for(int b = 0; b < currHist[0].length; b++) {
-//                        		System.arraycopy(currHist[a][b], 0, prevHist[a][b], 0, currHist[0][0].length);
-//                        	}
-//                        }
                   
                         currHist = createHist(frame, height, width);
                         
@@ -183,7 +174,6 @@ public class Controller {
                         
                         float[] intersect = getIntersect(currHist, prevHist, width);
                         stiHist[i] = intersect;
-//                        System.out.println(i);
                         
 						int[][] greyscale = createGreyscale(stiHist);
                         for (int j = 0; j < width; j++) {
