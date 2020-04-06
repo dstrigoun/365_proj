@@ -3,39 +3,20 @@ package application;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import utilities.Utilities;
@@ -62,7 +43,6 @@ public class Controller {
 	private VideoCapture capture;
 	private ScheduledExecutorService timer;
 	
-	private int size;
 	private float[][][] currHist;
 	private float[][][] prevHist;
 	
@@ -101,11 +81,9 @@ public class Controller {
 			int width = (int) capture.get(Videoio.CAP_PROP_FRAME_WIDTH);
 			int frameCount = (int) capture.get(Videoio.CAP_PROP_FRAME_COUNT);
 			
-			
 			int[][] stiCols = new int[frameCount][height];
 			int[][] stiRows = new int[frameCount][width];
 			float[][] stiHist = new float[frameCount][width];
-			
 
 			stiColumn.setFitHeight(height);
 			stiColumn.setFitWidth(frameCount);
@@ -137,19 +115,16 @@ public class Controller {
 							slider.setValue(0);
 						}
 						
-						
 						int i = (int) currentFrameNumber - 1;
                         for (int j = 0; j < height; j++) {
                             Color cCol = new Color(stiCols[i][j], true);
                             stiColImage.setRGB(i, j, cCol.getRGB());
                         }
-                        
                         for (int j = 0; j < width; j++) {
                             Color cRow = new Color(stiRows[i][j], true);
                             stiRowImage.setRGB(i, j, cRow.getRGB());                        	
                         }
                         
-                      
                         // Set image
                         Image cardCol = SwingFXUtils.toFXImage(stiColImage, null);
                         stiColumn.setImage(cardCol);
@@ -160,16 +135,9 @@ public class Controller {
                         // Histogram stuff
                         if(i <= 1 || currentFrameNumber == frameCount - 1) {
                         	currHist = createHist(frame, height, width);
-                        	System.out.println("first frame");
                         }
                         prevHist = currHist.clone();
-                  
                         currHist = createHist(frame, height, width);
-                        
-                        if(Arrays.equals(prevHist, currHist)) {
-                        	System.out.println("We are equal bois");
-                        }
-                       
                         
                         float[] intersect = getIntersect(currHist, prevHist, width);
                         stiHist[i] = intersect;
@@ -183,7 +151,6 @@ public class Controller {
                         
                         Image cardHist = SwingFXUtils.toFXImage(stiHistImage, null);
 						stiHistGrey.setImage(cardHist);
-                        
 					} else { // reach the end of the video
 						capture.set(Videoio.CAP_PROP_POS_FRAMES, 0); 
 						return;
@@ -195,6 +162,7 @@ public class Controller {
 				timer.shutdown();
 				timer.awaitTermination(Math.round(1000/framePerSecond), TimeUnit.MILLISECONDS); 
 			} // run the frame grabber 
+			
 			timer = Executors.newSingleThreadScheduledExecutor();
 			timer.scheduleAtFixedRate(frameGrabber, 0, Math.round(1000/framePerSecond), TimeUnit.MILLISECONDS); 
 		} 
